@@ -1,326 +1,272 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>四國5天4夜 (最終確認版)</title>
-<style>
-    /* 基礎設定 */
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-        background: #F5F5F7; color: #1D1D1F;
-        margin: 0; padding: 0; padding-bottom: 100px; -webkit-tap-highlight-color: transparent;
-    }
-    
-    /* 頂部資訊 */
-    .header {
-        background: rgba(255, 255, 255, 0.95); padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100;
-        border-bottom: 1px solid #E5E5E5; backdrop-filter: blur(10px);
-    }
-    h1 { margin: 5px 0; font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; }
-    .sub-info { font-size: 0.8rem; color: #86868B; margin-top: 5px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四國松山獨旅行程表</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e67e22; /* 橘色強調重點 */
+            --transport-color: #3498db; /* 交通藍色 */
+            --hotel-bg: #fdf2e9;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+        }
 
-    /* 切換按鈕 */
-    .nav { display: flex; padding: 10px 15px; gap: 10px; background: #FFF; border-bottom: 1px solid #E5E5E5; }
-    .nav-btn {
-        flex: 1; padding: 8px; border: none; background: #F2F2F7;
-        border-radius: 8px; font-weight: 600; color: #86868B; font-size: 0.95rem; transition: all 0.2s;
-    }
-    .nav-btn.active { background: #007AFF; color: #FFF; box-shadow: 0 2px 5px rgba(0,122,255,0.2); }
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
 
-    /* 頁面容器 */
-    .page { display: none; padding: 15px; max-width: 600px; margin: 0 auto; }
-    .page.active { display: block; animation: fadeIn 0.3s ease; }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
 
-    /* 行程卡片 */
-    .card { background: #FFF; border-radius: 12px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #F0F0F0; }
-    .card-head {
-        padding: 15px; background: #FFF; border-bottom: 1px solid #F5F5F5;
-        display: flex; justify-content: space-between; align-items: center; cursor: pointer;
-    }
-    .date-badge { background: #000; color: #FFF; padding: 2px 8px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; margin-right: 8px; }
-    .weather { font-size: 0.8rem; color: #007AFF; text-decoration: none; background: #E5F1FF; padding: 4px 8px; border-radius: 12px; font-weight: 600; }
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
 
-    /* 行程列表 */
-    .list { padding: 5px 20px 20px 20px; display: none; }
-    .item { padding: 20px 0; border-bottom: 1px solid #F0F0F0; position: relative; }
-    .item:last-child { border: none; }
-    
-    /* 時間軸線條 */
-    .item::before {
-        content: ''; position: absolute; left: 6px; top: 45px; bottom: -15px;
-        width: 2px; background: #E5E5E5; z-index: 0;
-    }
-    .item:last-child::before { display: none; }
+        /* Day Section Styles */
+        .day-section {
+            margin-bottom: 40px;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 20px;
+        }
 
-    .time { 
-        background: #F5F5F7; color: #1D1D1F; padding: 4px 8px; border-radius: 6px; 
-        font-size: 0.85rem; font-weight: 700; display: inline-block; position: relative; z-index: 1;
-    }
-    .name { font-size: 1.1rem; font-weight: 700; margin: 8px 0 4px 0; color: #1D1D1F; }
-    .desc { color: #6E6E73; font-size: 0.95rem; margin-bottom: 10px; line-height: 1.5; }
+        .day-header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 0 8px 8px 0;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
 
-    /* 交通資訊框 */
-    .trans {
-        background: #F5F9FF; border-radius: 8px; padding: 10px; 
-        font-size: 0.9rem; margin: 10px 0; border-left: 4px solid #007AFF;
-    }
-    .trans-row { display: flex; align-items: flex-start; margin-bottom: 4px; }
-    .trans-icon { min-width: 20px; margin-right: 5px; }
-    .tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: #FFF; margin-left: 5px; }
-    .tag-r { background: #FF3B30; } /* 紅色警示 */
-    .tag-g { background: #34C759; } /* 綠色安全 */
-    .tag-o { background: #FF9500; } /* 橘色普通 */
+        /* Timeline Item Styles */
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding-left: 15px;
+        }
 
-    /* 按鈕群 */
-    .btns { display: flex; gap: 10px; margin-top: 12px; }
-    .btn {
-        flex: 1; padding: 10px 0; text-align: center; border-radius: 8px;
-        text-decoration: none; font-size: 0.9rem; font-weight: 600;
-        cursor: pointer; transition: opacity 0.2s; border: none;
-    }
-    .btn:active { opacity: 0.7; }
-    .btn-map { background: #E5F1FF; color: #007AFF; }
-    .btn-tip { background: #FFF0E5; color: #FF9500; width: 100%; margin-top: 10px; }
+        .time {
+            font-weight: bold;
+            color: var(--accent-color);
+            font-size: 0.9em;
+            display: block;
+            margin-bottom: 4px;
+        }
 
-    /* 彈窗 */
-    .modal-bg {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(2px);
-    }
-    .modal-box {
-        background: #FFF; width: 85%; max-width: 320px; padding: 25px;
-        border-radius: 16px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    .modal-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #EEE; }
+        .activity {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
 
-    /* 記帳 */
-    .sum-box { background: #333; color: #FFF; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .input-group { background: #FFF; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .inp { width: 100%; padding: 10px; border: 1px solid #E5E5E5; border-radius: 8px; font-size: 1rem; margin-bottom: 10px; box-sizing: border-box; background: #F9F9F9; }
-    .btn-add { background: #000; color: #FFF; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; border: none; font-size: 1rem; }
-    .hist-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F0F0F0; align-items: center; }
+        .detail {
+            font-size: 0.95em;
+            color: #666;
+            margin-bottom: 8px;
+        }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-</style>
+        /* Transport Badge */
+        .transport-box {
+            background-color: #eef7fc;
+            border-left: 3px solid var(--transport-color);
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 0.9em;
+            border-radius: 4px;
+        }
+
+        .transport-icon {
+            display: inline-block;
+            background: var(--transport-color);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+
+        /* Return to Hotel Highlight */
+        .return-hotel {
+            background-color: var(--hotel-bg);
+            border: 1px dashed var(--accent-color);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .return-title {
+            color: var(--accent-color);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .return-title::before {
+            content: "🏠";
+            margin-right: 8px;
+        }
+
+        /* Tram Number Highlight */
+        .tram-no {
+            font-weight: bold;
+            color: #c0392b;
+            background: #fff;
+            padding: 0 4px;
+            border: 1px solid #c0392b;
+            border-radius: 3px;
+        }
+
+    </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>四國 5 天 4 夜</h1>
-    <div class="sub-info">高松進．岡山出 (1/5 - 1/9)</div>
-</div>
+<div class="container">
+    <h1>四國・松山慶生獨旅 (精準交通版)</h1>
 
-<div class="nav">
-    <button class="nav-btn active" onclick="pg('trip',this)">📅 行程表</button>
-    <button class="nav-btn" onclick="pg('money',this)">💰 記帳本</button>
-</div>
-
-<div id="trip" class="page active"></div>
-
-<div id="money" class="page">
-    <div class="sum-box">
-        <div style="font-size:0.9rem; opacity:0.8; margin-bottom:5px;">總支出 (JPY)</div>
-        <div style="font-size:2.5rem; font-weight:bold" id="t-jpy">¥0</div>
-        <div style="font-size:0.9rem; opacity:0.8; margin-top:5px;" id="t-for">HK$0 / NT$0</div>
-    </div>
-    
-    <div class="input-group">
-        <div style="display:flex; gap:10px; margin-bottom:10px;">
-            <select id="dt" class="inp" style="flex:1">
-                <option>1/5 (一)</option><option>1/6 (二)</option><option>1/7 (三)</option>
-                <option>1/8 (四)</option><option>1/9 (五)</option>
-            </select>
-            <input id="nm" class="inp" placeholder="項目 (如: 晚餐)" style="flex:2; margin-bottom:0;">
+    <div class="day-section">
+        <div class="day-header">第一天 1/5 (一) | 高雄 → 名古屋 → 高松</div>
+        
+        <div class="timeline-item">
+            <span class="time">14:50 - 23:00</span>
+            <div class="activity">飛行與長途移動</div>
+            <div class="detail">高雄 (KHH) → 名古屋 (NGO) → 岡山 → 高松</div>
         </div>
-        <input id="am" type="number" class="inp" placeholder="金額 (日幣)" style="margin-bottom:15px">
-        <button onclick="add()" class="btn-add">＋ 加入這筆消費</button>
+
+        <div class="timeline-item return-hotel">
+            <span class="time">00:10 (跨日)</span>
+            <div class="return-title">【回程】返回飯店休息</div>
+            <div class="transport-box">
+                <span class="transport-icon">步行</span>
+                視飯店位置：若住瓦町可搭計程車；若住高松站周邊，步行即可。
+            </div>
+        </div>
     </div>
-    
-    <div id="hist" style="margin-top:20px; background:#FFF; padding:0 20px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05);"></div>
+
+    <div class="day-section">
+        <div class="day-header">第三天 1/7 (三) | 高松 → 松山 (道後溫泉)</div>
+
+        <div class="timeline-item">
+            <span class="time">09:40 - 12:12</span>
+            <div class="activity">JR 移動：高松 → 松山</div>
+            <div class="transport-box">
+                <span class="transport-icon">JR 特急</span> Ishizuchi 5號 (自由席/指定席)
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <span class="time">12:20</span>
+            <div class="activity">前往飯店：東橫INN 松山一番町</div>
+            <div class="transport-box">
+                <span class="transport-icon">路面電車</span> JR松山駅前 → 勝山町<br>
+                <strong>路線：</strong> 搭乘 <span class="tram-no">5號線</span> (往 道後溫泉)<br>
+                <strong>下車：</strong> 「勝山町」站 (大街道下一站)<br>
+                <strong>步行：</strong> 下車對面即是飯店。
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <span class="time">13:00 - 17:30</span>
+            <div class="activity">道後溫泉 & 商店街</div>
+            <div class="transport-box">
+                <span class="transport-icon">路面電車</span> 勝山町 → 道後溫泉 (搭乘 <span class="tram-no">3</span> 或 <span class="tram-no">5</span> 號線)
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <span class="time">18:00</span>
+            <div class="activity">晚餐：大街道商店街</div>
+            <div class="transport-box">
+                <span class="transport-icon">路面電車</span> 道後溫泉 → 大街道 (搭乘 <span class="tram-no">3</span> 或 <span class="tram-no">5</span> 號線)
+            </div>
+            <div class="detail">推薦：鄉土料理 五志喜 (鯛魚飯)</div>
+        </div>
+
+        <div class="timeline-item return-hotel">
+            <span class="time">20:00</span>
+            <div class="return-title">【回程】返回東橫INN</div>
+            <div class="detail">因為只差一站，建議散步消食。</div>
+            <div class="transport-box">
+                <span class="transport-icon">方案A 步行</span> 從大街道沿大馬路往東走 (約 450m / 7分鐘)，飯店在左手邊。<br>
+                <span class="transport-icon">方案B 電車</span> 在「大街道」搭 <span class="tram-no">3</span> 或 <span class="tram-no">5</span> 號線，坐1站至「勝山町」。
+            </div>
+        </div>
+    </div>
+
+    <div class="day-section">
+        <div class="day-header">第四天 1/8 (四) | 松山城 & REF 飯店生日夜</div>
+
+        <div class="timeline-item">
+            <span class="time">10:15</span>
+            <div class="activity">換飯店：東橫INN → REF 松山市站</div>
+            <div class="transport-box">
+                <span class="transport-icon">路面電車</span> 勝山町 → 松山市駅<br>
+                <strong>關鍵：</strong> 務必搭乘 <span class="tram-no">3號線</span> (往 松山市駅) <br>
+                <span style="color:red; font-size:0.8em;">(注意：不要搭到 5號線)</span><br>
+                <strong>下車：</strong> 終點站「松山市駅」，REF 就在高島屋旁。
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <span class="time">11:00 - 15:00</span>
+            <div class="activity">松山城 & 空中散步</div>
+            <div class="transport-box">
+                <span class="transport-icon">路面電車</span> 松山市駅 ↔ 大街道 (來回皆搭 <span class="tram-no">3號線</span>)
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <span class="time">16:30</span>
+            <div class="activity">回飯店 Check-in & 摩天輪</div>
+            <div class="detail">回到 REF 飯店辦理入住，隨後搭乘高島屋大摩天輪 (Kururin)。</div>
+        </div>
+
+        <div class="timeline-item">
+            <span class="time">18:30</span>
+            <div class="activity">生日晚餐</div>
+            <div class="detail">地點：松山市站地下街 / 高島屋樓上 / 銀天街 (飯店樓下周邊)</div>
+        </div>
+
+        <div class="timeline-item return-hotel">
+            <span class="time">20:30</span>
+            <div class="return-title">【回程】返回 REF 房間</div>
+            <div class="transport-box">
+                <span class="transport-icon">步行</span> 0花費 / 0轉乘<br>
+                <strong>路線：</strong> 晚餐後直接步行上樓/回飯店大廳。<br>
+                因飯店與車站共構，無需任何交通工具。
+            </div>
+        </div>
+    </div>
+
+     <div class="day-section">
+        <div class="day-header">第五天 1/9 (五) | 離開松山</div>
+        <div class="timeline-item">
+            <span class="time">09:45</span>
+            <div class="activity">前往 JR 松山站</div>
+            <div class="transport-box">
+                <span class="transport-icon">路面電車</span> 松山市駅 → JR松山駅前<br>
+                <strong>路線：</strong> 搭 <span class="tram-no">1</span>, <span class="tram-no">2</span> (環狀) 或 <span class="tram-no">5</span> 號線。
+            </div>
+        </div>
+     </div>
+
 </div>
 
-<div id="mod" class="modal-bg" onclick="cl(event)">
-    <div class="modal-box">
-        <div id="mt" class="modal-title"></div>
-        <div id="mc" style="line-height:1.6; font-size:0.95rem; color:#444;"></div>
-        <button onclick="document.getElementById('mod').style.display='none'" class="btn" style="width:100%; margin-top:20px; background:#F2F2F7; color:#000;">關閉</button>
-    </div>
-</div>
-
-<script>
-// --- 行程資料庫 (Updated 2025) ---
-const D = [
- {
-  d: "1/5 (一)", t: "高松抵達．烏龍麵", w: "☁️ 多雲時晴", wl: "https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=370000",
-  i: [
-   {tm:"10:20", n:"抵達高松機場 (TAK)", d:"出關後前往2號乘車處。", 
-    tr:{l:"機場巴士 → 兵庫町", f:"配合航班發車", c:"tag-o", t:"免預約"},
-    o:"Takamatsu Airport", z:"Hyogomachi", m:"transit",
-    tip:{t:"🚌 機場巴士攻略", c:"1. 出關後左手邊找自動售票機。<br>2. 購買往「高松駅」方向車票 (約¥1,000)。<br>3. 在「兵庫町」或「高松駅」下車 (視飯店而定)。"}
-   },
-   {tm:"12:30", n:"午餐：うどん市場", d:"讚岐烏龍麵初體驗 (兵庫町商店街內)。", map:"Udon Ichiba Hyogo-machi"},
-   {tm:"14:00", n:"高松市區散策", d:"逛全日本最長商店街、高松港赤燈台。", map:"Takamatsu Marugamemachi Shopping Street"},
-   {tm:"18:30", n:"晚餐：一鶴 (骨付鳥)", d:"必吃帶骨烤雞腿。", map:"Ikkaku Takamatsu"},
-   {tm:"20:00", n:"入住：東橫INN 高松兵庫町", d:"早點休息。", map:"Toyoko Inn Takamatsu Hyogomachi"}
-  ]
- },
- {
-  d: "1/6 (二)", t: "金刀比羅宮朝聖", w: "☀️ 晴時多雲", wl: "https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=370000",
-  i: [
-   {tm:"09:00", n:"琴電前往琴平", d:"體驗可愛的黃色電車。", 
-    tr:{l:"高松築港站 → 琴平站", f:"約60分", c:"tag-g", t:"刷 ICOCA"},
-    o:"Takamatsu-Chikko Station", z:"Kotoden-Kotohira Station", m:"transit",
-    tip:{t:"🚋 琴電攻略", c:"直接刷 ICOCA 卡進出站即可，不用買票。沿途風景很美。"}
-   },
-   {tm:"10:30", n:"金刀比羅宮", d:"挑戰785階梯，參拜日本人一生必去的神社。", map:"Kotohira-gu"},
-   {tm:"13:00", n:"午餐：琴平老街", d:"品嚐灸饅頭或烏龍麵。", map:"Kotohira Omotesando"},
-   {tm:"16:00", n:"舊金毘羅大芝居", d:"(選) 日本最古老的歌舞伎劇場。", map:"Kanamaruza"},
-   {tm:"18:30", n:"返回高松晚餐", d:"商店街居酒屋或定食。", map:"Takamatsu Station"},
-   {tm:"20:00", n:"續住：東橫INN 高松兵庫町", d:"", map:"Toyoko Inn Takamatsu Hyogomachi"}
-  ]
- },
- {
-  d: "1/7 (三)", t: "移動至松山．道後溫泉", w: "🌥️ 多雲", wl: "https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=380000",
-  i: [
-   {tm:"09:00", n:"JR 特急 Ishizuchi", d:"關鍵長途移動 (高松→松山)。", 
-    tr:{l:"JR高松站 → JR松山站", f:"約2.5小時", c:"tag-r", t:"建議指定席"},
-    o:"Takamatsu Station", z:"Matsuyama Station", m:"transit",
-    tip:{t:"🚄 JR 搭乘注意", c:"這段路程較長，且自由席可能沒位子放行李。建議 Day 1 抵達時就先在綠色窗口買好這趟的「指定席」車票。"}
-   },
-   {tm:"12:00", n:"抵達松山 & 放行李", d:"搭路面電車去飯店。", 
-    tr:{l:"JR松山駅前 → 勝山町", f:"路面電車 #5", c:"tag-o", t:"¥200 (現金)"},
-    o:"JR Matsuyama Station", z:"Toyoko Inn Matsuyama Ichibancho", m:"transit",
-    tip:{t:"🚋 松山路面電車", c:"1. 出 JR 站直走，電車站在馬路中間。<br>2. 搭【5號線】(往道後溫泉)。<br>3. 在【勝山町】下車 (不是大街道)，過馬路就是東橫INN。<br>4. 準備零錢 ¥200 (ICOCA不可用)。"}
-   },
-   {tm:"13:30", n:"道後溫泉", d:"神隱少女場景、溫泉商店街、少爺機關鐘。", map:"Dogo Onsen Honkan"},
-   {tm:"18:00", n:"晚餐：鯛魚飯 (鯛めし)", d:"必吃！推薦「丸水」或「秋嘉」。", map:"Gansui Dogo"},
-   {tm:"20:00", n:"入住：東橫INN 松山一番町", d:"就在大街道商店街尾端附近。", map:"Toyoko Inn Matsuyama Ichibancho"}
-  ]
- },
- {
-  d: "1/8 (四)", t: "松山城．換飯店", w: "☀️ 晴朗", wl: "https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=380000",
-  i: [
-   {tm:"10:00", n:"移動至 REF 飯店", d:"先去新飯店寄放行李。", 
-    tr:{l:"勝山町 → 松山市駅", f:"電車 #3", c:"tag-g", t:"行李寄放"},
-    o:"Toyoko Inn Matsuyama Ichibancho", z:"REF Matsuyama City Station by VESSEL HOTELS", m:"transit",
-    tip:{t:"🏨 飯店移動", c:"1. 飯店對面搭電車【3號線】往「松山市駅」。<br>2. 終點站下車，REF 飯店就在旁邊 (高島屋旁)。"}
-   },
-   {tm:"11:00", n:"松山城", d:"搭乘單人吊椅空中散步，登天守閣。", map:"Matsuyama Castle Ropeway Station"},
-   {tm:"13:00", n:"午餐：大街道周邊", d:"商店街覓食。", map:"Okaido Shopping Street"},
-   {tm:"15:00", n:"松山市區深度遊", d:"坂上之雲博物館 或 大摩天輪 (Kururin)。", map:"Iyotetsu Takashimaya"},
-   {tm:"18:30", n:"生日晚餐 🎉", d:"松山市站/高島屋周邊精緻料理。", map:"Matsuyamashi Station"},
-   {tm:"20:00", n:"入住：REF 松山市站", d:"享受大浴場 & 桑拿。", map:"REF Matsuyama City Station by VESSEL HOTELS"}
-  ]
- },
- {
-  d: "1/9 (五)", t: "岡山返程 (生日快樂)", w: "☁️ 多雲", wl: "https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=330000",
-  i: [
-   {tm:"09:30", n:"前往 JR 松山站", d:"預留時間移動。", 
-    tr:{l:"松山市駅 → JR松山站", f:"電車/計程車", c:"tag-r", t:"勿遲到"},
-    o:"Matsuyamashi Station", z:"JR Matsuyama Station", m:"transit",
-    tip:{t:"⚠️ 關鍵移動", c:"因為是生日且有行李，建議直接請飯店叫計程車 (約¥1200) 直達 JR 站，輕鬆又準時。若搭電車請搭【5號線】。"}
-   },
-   {tm:"10:21", n:"特急 Shiokaze 14號", d:"前往岡山 (指定席)。", 
-    tr:{l:"JR松山 10:21發", f:"13:11 抵達岡山", c:"tag-r", t:"絕對要搭上"},
-    o:"Matsuyama Station", z:"Okayama Station", m:"transit",
-    tip:{t:"🚄 回程 JR", c:"這班車 13:11 到岡山，讓你有充裕時間買伴手禮。錯過這班會非常趕！"}
-   },
-   {tm:"13:11", n:"岡山站午餐 & 購物", d:"黃金 1.5 小時：買吉備糰子、白桃果凍。", map:"Sun Station Okayama"},
-   {tm:"14:50", n:"機場利木津巴士", d:"前往岡山機場。", 
-    tr:{l:"西口 21號月台", f:"14:50發車", c:"tag-r", t:"關鍵巴士"},
-    o:"Okayama Station", z:"Okayama Airport", m:"transit",
-    tip:{t:"🚌 巴士乘車處", c:"1. 岡山站改札口出來走「西口」。<br>2. 下電扶梯到一樓巴士總站。<br>3. 找「21號」站牌 (有售票機)。<br>4. 務必搭上 14:50 這班，15:20 到機場。"}
-   },
-   {tm:"15:55", n:"虎航報到 (IT263)", d:"辦理登機，17:55 起飛。", map:"Okayama Airport"}
-  ]
- }
-];
-
-// --- 渲染引擎 (不變) ---
-function render() {
- let h = "";
- D.forEach((d, i) => {
-  let list = "";
-  d.i.forEach((x, xi) => {
-   let tr = "";
-   if(x.tr) tr = `<div class="trans"><div class="trans-row"><div class="trans-icon">📍</div><div>${x.tr.l}</div></div><div class="trans-row"><div class="trans-icon">💡</div><div>${x.tr.f} <span class="tag ${x.tr.c}">${x.tr.t}</span></div></div></div>`;
-   
-   let b = "";
-   if(x.tip) b += `<button class="btn btn-tip" onclick="pop(${i},${xi})">💡 ${x.tip.t}</button>`;
-   
-   if(x.o && x.z) {
-     let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(x.o)}&destination=${encodeURIComponent(x.z)}&travelmode=${x.m}`;
-     b += `<div class="btns"><a href="${url}" target="_blank" class="btn btn-map">🗺️ 導航</a></div>`;
-   } else if(x.map) {
-     let url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(x.map)}`;
-     b += `<div class="btns"><a href="${url}" target="_blank" class="btn btn-map">📍 地圖</a></div>`;
-   }
-
-   list += `<div class="item"><span class="time">${x.tm}</span><div class="name">${x.n}</div>${tr}<div class="desc">${x.d}</div>${b}</div>`;
-  });
-  
-  let disp = i === 0 ? "block" : "none";
-  let arr = i === 0 ? "▲" : "▼";
-  h += `<div class="card"><div class="card-head" onclick="tog(this)"><div><span class="date-badge">${d.d.split(" ")[0]}</span> <b>${d.t}</b></div><a href="${d.wl}" target="_blank" class="weather">${d.w}</a></div><div class="list" style="display:${disp}">${list}</div></div>`;
- });
- document.getElementById("trip").innerHTML = h;
- loadM();
-}
-
-// --- 功能函數 ---
-function pg(id, el) {
- document.querySelectorAll(".page").forEach(x => x.style.display = "none");
- document.querySelectorAll(".nav-btn").forEach(x => x.classList.remove("active"));
- document.getElementById(id).style.display = "block";
- el.classList.add("active");
- document.body.scrollTop = 0; document.documentElement.scrollTop = 0;
-}
-
-function tog(el) {
- let list = el.nextElementSibling;
- let isHidden = list.style.display === "none";
- document.querySelectorAll(".list").forEach(x => x.style.display = "none"); // Accordion style
- list.style.display = isHidden ? "block" : "none";
-}
-
-function pop(di, xi) {
- let t = D[di].i[xi].tip;
- document.getElementById("mt").innerText = t.t;
- document.getElementById("mc").innerHTML = t.c;
- document.getElementById("mod").style.display = "flex";
-}
-function cl(e) { if(e.target.id == "mod") e.target.style.display = "none"; }
-
-// --- 記帳功能 ---
-let M = [];
-function loadM() {
- try { M = JSON.parse(localStorage.getItem("m_trip_2026")) || []; } catch { M = []; }
- drawM();
-}
-function drawM() {
- let h = "", t = 0;
- M.slice().reverse().forEach(x => {
-  t += parseInt(x.a);
-  h += `<div class="hist-item"><div><b style="font-size:1rem">${x.n}</b> <div style="font-size:0.8rem;color:#888;margin-top:2px">${x.d}</div></div><div style="display:flex;align-items:center"><span style="font-weight:bold;margin-right:10px">¥${x.a}</span><button onclick="del(${x.id})" style="border:none;background:#EEE;color:#888;width:24px;height:24px;border-radius:12px;font-weight:bold">×</button></div></div>`;
- });
- document.getElementById("hist").innerHTML = h ? h : "<div style='text-align:center;color:#BBB;padding:20px'>尚無紀錄</div>";
- document.getElementById("t-jpy").innerText = "¥" + t.toLocaleString();
- document.getElementById("t-for").innerText = `HK$${Math.round(t * 0.051).toLocaleString()} / NT$${Math.round(t * 0.215).toLocaleString()}`;
-}
-function add() {
- let d = document.getElementById("dt").value, n = document.getElementById("nm").value, a = document.getElementById("am").value;
- if(!n || !a) { alert("請輸入項目和金額"); return; }
- M.push({ id: Date.now(), d: d, n: n, a: a });
- localStorage.setItem("m_trip_2026", JSON.stringify(M));
- document.getElementById("nm").value = ""; document.getElementById("am").value = "";
- drawM();
-}
-function del(id) {
- if(confirm("確定刪除此筆紀錄？")) { M = M.filter(x => x.id != id); localStorage.setItem("m_trip_2026", JSON.stringify(M)); drawM(); }
-}
-
-render();
-</script>
 </body>
-</html> 
+</html>
