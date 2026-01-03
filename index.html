@@ -3,369 +3,471 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 四國松山慶生獨旅 - 完整攻略版</title>
+    <title>四國獨遊 (智慧記帳版)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #2c3e50;      /* 深藍主色 */
-            --accent: #d35400;       /* 橘紅強調色 */
-            --transport: #2980b9;    /* 交通藍 */
-            --hotel: #8e44ad;        /* 住宿紫 */
-            --money: #27ae60;        /* 預算綠 */
-            --bg: #f5f7fa;
-            --white: #ffffff;
-            --border: #e1e4e8;
+            --primary: #C5B396;
+            --primary-dark: #A39075;
+            --bg: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --text-main: #4A4A4A;
+            --text-light: #888888;
+            --btn-blue: #4A90E2;
+            --btn-green: #50E3C2;
+            --danger: #FF6B6B;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
             background-color: var(--bg);
-            color: #333;
-            line-height: 1.6;
+            color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 15px;
+            padding-bottom: 100px;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: var(--white);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        /* 頂部資訊 */
+        .header { text-align: center; margin-bottom: 20px; }
+        h1 { margin: 10px 0; font-size: 1.6rem; color: #333; }
+        .currency-pill {
+            display: inline-block; background: #EDE7DD; color: #8D7B60;
+            padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;
         }
 
-        h1 { text-align: center; border-bottom: 3px solid var(--accent); padding-bottom: 15px; color: var(--primary); }
-        h2 { background-color: var(--primary); color: white; padding: 10px 15px; border-radius: 6px; margin-top: 30px; }
-        h3 { color: var(--primary); border-left: 4px solid var(--accent); padding-left: 10px; margin-top: 20px; }
+        /* 切換按鈕 */
+        .nav-container { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .nav-btn {
+            flex: 1; max-width: 140px; border: none; padding: 12px; border-radius: 12px;
+            font-weight: bold; font-size: 1rem; color: #999; background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; cursor: pointer;
+        }
+        .nav-btn.active {
+            background: var(--primary); color: white;
+            box-shadow: 0 4px 10px rgba(197, 179, 150, 0.4);
+        }
 
-        /* Grid Layouts */
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        
-        .card { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
-        
-        /* Weather Style */
-        .weather-box { display: flex; justify-content: space-between; align-items: center; background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
-        .weather-icon { font-size: 2em; margin-right: 10px; }
+        /* 內容區塊 */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Budget Table */
-        table.budget-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        table.budget-table th { background: var(--money); color: white; padding: 10px; text-align: left; }
-        table.budget-table td { border-bottom: 1px solid #ddd; padding: 10px; }
-        .total-row { font-weight: bold; background: #e8f5e9; }
+        /* --- 行程卡片 --- */
+        .day-card {
+            background: white; border-radius: 16px; margin-bottom: 15px; overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06); transition: transform 0.1s;
+        }
+        .day-header {
+            padding: 20px; background: linear-gradient(135deg, #D6C6A9, #B8A586); color: white;
+            display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+        }
+        .day-num {
+            font-size: 1.8rem; font-weight: 800; width: 50px; text-align: center; opacity: 0.9;
+        }
+        .day-text h2 { margin: 0; font-size: 1.2rem; }
+        .day-text p { margin: 2px 0 0; font-size: 0.85rem; opacity: 0.9; }
+        .arrow { font-size: 1.2rem; transition: 0.3s; }
+        .arrow.rotate { transform: rotate(180deg); }
 
-        /* Transport Warning */
-        .warning-box { background-color: #fff5f5; border-left: 4px solid #c0392b; color: #c0392b; padding: 10px; font-weight: bold; margin: 10px 0; }
-        .tram-no { background: #c0392b; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        /* 詳細行程列表 */
+        .events-list { display: none; padding: 15px; background: #FAFAFA; }
+        
+        .event-item {
+            position: relative; padding-left: 20px; margin-bottom: 20px; border-left: 3px solid #E0E0E0;
+        }
+        .event-item::before {
+            content: ''; position: absolute; left: -8px; top: 6px; width: 13px; height: 13px;
+            background: white; border: 3px solid var(--primary); border-radius: 50%;
+        }
+        .event-time { font-size: 0.9rem; color: var(--primary-dark); font-weight: 800; margin-bottom: 4px; display: block; }
+        .event-title { font-size: 1.1rem; font-weight: bold; color: #333; margin-bottom: 4px; }
+        .event-desc { font-size: 0.95rem; color: #666; line-height: 1.5; margin-bottom: 10px; }
+        
+        /* 標籤顏色 */
+        .type-transport { border-left-color: var(--btn-blue); }
+        .type-transport::before { border-color: var(--btn-blue); }
+        .type-transport .event-time { color: var(--btn-blue); }
 
-        /* Day Itinerary */
-        .day-section { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 30px; }
-        .day-header { background: #ecf0f1; padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .day-title { font-weight: bold; color: var(--primary); font-size: 1.1em; }
-        .hotel-tag { background: var(--hotel); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.85em; }
-        
-        .timeline { padding: 20px; }
-        .timeline-item { position: relative; padding-left: 20px; border-left: 2px solid #ddd; margin-bottom: 25px; }
-        .timeline-item::before { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; }
-        
-        .time { color: var(--accent); font-weight: bold; display: block; margin-bottom: 5px; }
-        .activity { font-size: 1.1em; font-weight: bold; margin-bottom: 5px; }
-        
-        .transport-detail { background: #eaf6ff; border: 1px solid #b6e0ff; padding: 10px; border-radius: 6px; font-size: 0.9em; margin-top: 5px; }
-        .badge { background: var(--transport); color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
+        /* 按鈕群組 */
+        .action-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .btn {
+            text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: 500;
+            flex: 1; min-width: 120px; transition: 0.2s; border: none; cursor: pointer;
+        }
+        .btn-map { background: white; border: 1px solid #DDD; color: #555; }
+        .btn-go { background: var(--btn-blue); color: white; }
+        .btn-walk { background: var(--btn-green); color: white; }
+        .btn-price { background: #FFF3E0; color: #D35400; cursor: default; }
 
+        /* --- 記帳介面 --- */
+        .budget-card {
+            background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center;
+        }
+        .budget-val { font-size: 1.8rem; font-weight: 800; color: #333; margin: 5px 0; }
+        .budget-sub { font-size: 0.85rem; color: #999; }
+        
+        /* 圖表區 */
+        .chart-container {
+            background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            height: 250px; position: relative;
+        }
+
+        .input-group { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .form-input {
+            width: 100%; box-sizing: border-box; padding: 12px;
+            border: 1px solid #EEE; border-radius: 10px; font-size: 1rem; background: #F9F9F9;
+        }
+        .add-btn {
+            width: 100%; padding: 14px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
+        }
+        
+        .expense-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: white; padding: 15px; border-radius: 12px; margin-bottom: 8px;
+            border-left: 4px solid #DDD;
+        }
+        /* 分類顏色標籤 */
+        .cat-transport { border-left-color: #4A90E2; }
+        .cat-food { border-left-color: #F5A623; }
+        .cat-ticket { border-left-color: #50E3C2; }
+        .cat-stay { border-left-color: #9013FE; }
+        .cat-shop { border-left-color: #FF6B6B; }
+        .cat-other { border-left-color: #BDC3C7; }
+
+        .ex-info { display: flex; flex-direction: column; }
+        .ex-date { font-size: 0.75rem; color: #AAA; }
+        .ex-cat { 
+            font-size: 0.75rem; background: #EEE; padding: 2px 6px; border-radius: 4px; 
+            margin-right: 5px; color: #666; display: inline-block;
+        }
+        .ex-name { font-weight: bold; font-size: 1rem; color: #333; }
+        .ex-amt { font-weight: bold; font-size: 1.1rem; color: var(--primary-dark); }
+        .del-btn { 
+            color: #FF6B6B; font-size: 1.2rem; padding: 5px 10px; 
+            background: #FFF0F0; border: none; border-radius: 8px; margin-left: 10px; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>【2025/26年版】四國松山慶生獨旅・完整手冊</h1>
-
-    <section>
-        <h2>1. 航班 & 天氣預測</h2>
-        <div class="info-grid">
-            <div class="card">
-                <h3>✈️ 航班資訊</h3>
-                <p><strong>去程 (1/5 一):</strong> 華航 07:00 TPE → 10:20 TAK</p>
-                <p><strong>回程 (1/9 五):</strong> 虎航 17:55 OKJ → 20:15 KHH</p>
-            </div>
-            <div class="card">
-                <h3>🌤️ 天氣預測 (1/5-1/9)</h3>
-                <div class="weather-box">
-                    <div>
-                        <span class="weather-icon">⛅</span>
-                        <strong>高松/松山/岡山</strong>
-                    </div>
-                    <div>
-                        氣溫：4°C ~ 12°C<br>
-                        降雨機率：20% (多雲時晴)
-                    </div>
-                </div>
-                <p style="font-size:0.9em; color:#666;">
-                    *建議穿著：洋蔥式穿法 (發熱衣+毛衣+防風外套)。<br>
-                    *海邊景點風大，請帶帽子。
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <section>
-        <h2>2. 預估費用記帳 (不含機票)</h2>
-        <p>以下為單人預估花費，請準備足夠現金與 ICOCA 儲值。</p>
-        <table class="budget-table">
-            <thead>
-                <tr>
-                    <th>項目</th>
-                    <th>詳細內容</th>
-                    <th>預估金額 (JPY)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>交通</td>
-                    <td>機場巴士(1000)+琴電(1260)+JR石鎚(6670)+JR潮風(6970)+市內電車(800)+回程巴士(780)</td>
-                    <td>¥17,480</td>
-                </tr>
-                <tr>
-                    <td>住宿</td>
-                    <td>4晚住宿 (預估平均 ¥8,000/晚)</td>
-                    <td>¥32,000</td>
-                </tr>
-                <tr>
-                    <td>餐飲</td>
-                    <td>早午晚餐 + 慶生大餐 + 零食 (¥5,000/天)</td>
-                    <td>¥25,000</td>
-                </tr>
-                <tr>
-                    <td>門票</td>
-                    <td>松山城纜車/天守閣、溫泉券、其他</td>
-                    <td>¥3,000</td>
-                </tr>
-                <tr class="total-row">
-                    <td>總計</td>
-                    <td>約合 HKD 4,200 (匯率 0.054)</td>
-                    <td>¥77,480</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-
-    <section>
-        <h2>3. 住宿安排 (已更新)</h2>
-        <ul>
-            <li><strong>Day 1 & 2 (高松)：</strong> 東橫INN 高松兵庫町 <span style="color:#666; font-size:0.9em;">(近商店街/巴士站)</span></li>
-            <li><strong>Day 3 (道後)：</strong> 道後帕提歐 (Hotel Patio Dogo) <span style="color:#666; font-size:0.9em;">(道後溫泉站正對面)</span></li>
-            <li><strong>Day 4 (市區)：</strong> 松山大和魯內飯店 (Daiwa Roynet) <span style="color:#666; font-size:0.9em;">(大街道站旁)</span></li>
-        </ul>
-    </section>
-
-    <h2>五天四夜詳細行程 & 交通路程</h2>
-
-    <div class="day-section">
-        <div class="day-header">
-            <span class="day-title">Day 1 (1/5 一) 高松抵達 & 烏龍麵</span>
-            <span class="hotel-tag">住：東橫INN 高松兵庫町</span>
-        </div>
-        <div class="timeline">
-            <div class="timeline-item">
-                <span class="time">10:20</span>
-                <span class="activity">抵達高松機場</span>
-                <div class="transport-detail">
-                    <span class="badge">巴士</span> <strong>機場利木津巴士</strong><br>
-                    地點：2號乘車處 (自動售票機購票)<br>
-                    下車：「兵庫町」站 (約1000円)<br>
-                    <em>*下車後步行至飯店寄放行李。</em>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <span class="time">12:30</span>
-                <span class="activity">午餐：うどん市場 (Udon Ichiba)</span>
-                <p>體驗自助式點餐，必吃炸物配烏龍麵。</p>
-            </div>
-            <div class="timeline-item">
-                <span class="time">14:00</span>
-                <span class="activity">高松商店街 & 港口散策</span>
-            </div>
-            <div class="timeline-item">
-                <span class="time">18:00</span>
-                <span class="activity">晚餐：一鶴 (Ikkaku)</span>
-                <p>必點：骨付鳥 (帶骨烤雞腿)。</p>
-            </div>
-            <div class="timeline-item">
-                <span class="time">20:00</span>
-                <span class="activity">【回程】步行回飯店</span>
-                <p>飯店就在商店街附近，步行可達。</p>
-            </div>
-        </div>
+    <div class="header">
+        <h1>四國5天4夜獨遊</h1>
+        <div class="currency-pill">匯率：1 JPY ≈ 0.051 HKD / 0.215 TWD</div>
     </div>
 
-    <div class="day-section">
-        <div class="day-header">
-            <span class="day-title">Day 2 (1/6 二) 金刀比羅宮朝聖</span>
-            <span class="hotel-tag">住：東橫INN 高松兵庫町 (續住)</span>
-        </div>
-        <div class="timeline">
-            <div class="timeline-item">
-                <span class="time">09:00</span>
-                <span class="activity">前往琴平</span>
-                <div class="transport-detail">
-                    <span class="badge">琴電</span> <strong>高松築港 → 琴電琴平</strong><br>
-                    支付：刷 ICOCA<br>
-                    車程：約 60 分鐘
-                </div>
-            </div>
-            <div class="timeline-item">
-                <span class="time">10:30</span>
-                <span class="activity">金刀比羅宮 (785階)</span>
-                <p>參拜海上守護神，沿途商店街很熱鬧。</p>
-            </div>
-            <div class="timeline-item">
-                <span class="time">15:00</span>
-                <span class="activity">溫泉街散步 & 舊金毘羅大芝居</span>
-            </div>
-            <div class="timeline-item">
-                <span class="time">17:00</span>
-                <span class="activity">【回程】返回高松</span>
-                <div class="transport-detail">
-                    <span class="badge">琴電</span> 琴電琴平 → 高松築港<br>
-                    晚餐於高松市區解決，步行回飯店。
-                </div>
-            </div>
-        </div>
+    <div class="nav-container">
+        <button class="nav-btn active" onclick="showTab('trip', this)">📅 行程表</button>
+        <button class="nav-btn" onclick="showTab('money', this)">💰 記帳簿</button>
     </div>
 
-    <div class="day-section">
-        <div class="day-header">
-            <span class="day-title">Day 3 (1/7 三) 移動日：直奔道後度假</span>
-            <span class="hotel-tag">住：道後帕提歐 (Hotel Patio Dogo)</span>
-        </div>
-        <div class="timeline">
-            <div class="timeline-item">
-                <span class="time">09:00</span>
-                <span class="activity">退房 & 前往 JR 高松站</span>
-            </div>
-            <div class="timeline-item">
-                <span class="time">09:40</span>
-                <span class="activity">JR 移動 (高松 → 松山)</span>
-                <div class="transport-detail">
-                    <span class="badge">JR特急</span> <strong>Ishizuchi (石鎚號)</strong><br>
-                    座位：建議先買指定席<br>
-                    抵達：約 12:12 抵達 JR 松山站
-                </div>
-            </div>
-            <div class="timeline-item">
-                <span class="time">12:20</span>
-                <span class="activity">轉乘路面電車 (往道後)</span>
-                <div class="transport-detail">
-                    <span class="badge">電車</span> <strong>JR松山駅前 → 道後溫泉</strong><br>
-                    路線：搭乘 <span class="tram-no">5號線</span> (往道後溫泉)<br>
-                    下車：終點站下車，飯店就在<strong>正對面</strong>。
-                </div>
-            </div>
-            <div class="timeline-item">
-                <span class="time">14:00</span>
-                <span class="activity">道後溫泉本館 & 商店街</span>
-            </div>
-            <div class="timeline-item">
-                <span class="time">18:00</span>
-                <span class="activity">晚餐：宇和島鯛魚飯</span>
-            </div>
-            <div class="timeline-item">
-                <span class="time">20:00</span>
-                <span class="activity">【回程】步行回房</span>
-                <p>享受住在溫泉街的特權，穿浴衣散步，過馬路即回飯店。</p>
-            </div>
-        </div>
+    <div id="tab-trip" class="tab-content active">
+        <div id="itinerary-list"></div>
     </div>
 
-    <div class="day-section">
-        <div class="day-header">
-            <span class="day-title">Day 4 (1/8 四) 松山城 & 生日慶祝</span>
-            <span class="hotel-tag">住：松山大和魯內 (Daiwa Roynet)</span>
+    <div id="tab-money" class="tab-content">
+        <div class="budget-card">
+            <div style="color:#888; font-size:0.9rem;">目前總支出</div>
+            <div class="budget-val" id="total-spent">¥0</div>
+            <div class="budget-sub" id="total-foreign">HK$0 / NT$0</div>
         </div>
-        <div class="timeline">
-            <div class="timeline-item">
-                <span class="time">10:00</span>
-                <span class="activity">換飯店 (道後 → 大街道)</span>
-                <div class="transport-detail">
-                    <span class="badge">電車</span> <strong>道後溫泉 → 大街道</strong><br>
-                    路線：搭乘 3號 或 5號線 皆可<br>
-                    <strong>Check-in：</strong> 下車後往東走 1 分鐘即達 Daiwa Roynet (樓下有7-11)。
-                </div>
-            </div>
-            <div class="timeline-item">
-                <span class="time">11:00</span>
-                <span class="activity">松山城空中散步</span>
-                <p>步行至纜車站 (就在飯店附近)，搭單人吊椅上山。</p>
-            </div>
-            <div class="timeline-item">
-                <span class="time">15:00</span>
-                <span class="activity">坂上之雲博物館 / 市區購物</span>
-            </div>
-            <div class="timeline-item">
-                <span class="time">18:00</span>
-                <span class="activity">🎂 生日大餐 (大街道)</span>
-                <p>在大街道商店街挑選餐廳慶祝。</p>
-            </div>
-            <div class="timeline-item">
-                <span class="time">20:30</span>
-                <span class="activity">【回程】步行回房</span>
-                <p>從商店街走出來，過馬路即回飯店。可享受飯店大浴缸/按摩椅。</p>
-            </div>
+
+        <div class="chart-container">
+            <canvas id="expenseChart"></canvas>
         </div>
+
+        <div class="input-group">
+            <h3 style="margin:0 0 15px 0;">✍️ 新增一筆</h3>
+            <div class="form-row">
+                <select id="in-date" class="form-input" style="flex:1">
+                    <option value="1/5">1/5 (一)</option>
+                    <option value="1/6">1/6 (二)</option>
+                    <option value="1/7">1/7 (三)</option>
+                    <option value="1/8">1/8 (四)</option>
+                    <option value="1/9">1/9 (五)</option>
+                </select>
+                <select id="in-cat" class="form-input" style="flex:1">
+                    <option value="transport">🚄 交通</option>
+                    <option value="food">🍱 飲食</option>
+                    <option value="ticket">🎫 門票</option>
+                    <option value="stay">🏨 住宿</option>
+                    <option value="shop">🛍️ 購物</option>
+                    <option value="other">📝 其他</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <input type="text" id="in-item" class="form-input" placeholder="項目 (如: 晚餐)" style="flex:2">
+                <input type="number" id="in-price" class="form-input" placeholder="金額" style="flex:1">
+            </div>
+            <button class="add-btn" onclick="addMoney()">＋ 加入記帳</button>
+        </div>
+
+        <h3 style="margin: 0 0 10px 5px; color:#666;">📝 消費明細</h3>
+        <div id="expense-list"></div>
     </div>
 
-    <div class="day-section" style="border-left: 5px solid var(--accent);">
-        <div class="day-header" style="background: #fff3e0;">
-            <span class="day-title">Day 5 (1/9 五) 岡山返程 (關鍵時刻)</span>
-            <span class="hotel-tag" style="background:var(--accent);">Daiwa Roynet 出發</span>
-        </div>
-        <div class="timeline">
-            <div class="timeline-item">
-                <span class="time">09:30</span>
-                <span class="activity">退房 & 前往電車站</span>
-                <p>飯店出門右手邊就是「大街道」站。</p>
-            </div>
-            <div class="timeline-item">
-                <span class="time">09:35</span>
-                <span class="activity">前往 JR 松山站</span>
-                <div class="transport-detail">
-                    <span class="badge">電車</span> <strong>大街道 → JR松山駅前</strong><br>
-                    路線：務必搭乘 <span class="tram-no">5號線</span> (往 JR松山駅前)<br>
-                    <div class="warning-box">⚠️ 警告：千萬不要搭到 3號線 (反方向)！</div>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <span class="time">10:21</span>
-                <span class="activity">🚄 JR 特急 Shiokaze 14號</span>
-                <div class="transport-detail">
-                    <strong>10:21 松山發 → 13:11 岡山著</strong><br>
-                    請務必購買指定席 (D席靠窗)。
-                </div>
-            </div>
-            <div class="timeline-item">
-                <span class="time">13:15</span>
-                <span class="activity">岡山站採購 (1小時)</span>
-                <p>在站內「Sun Station」買吉備糰子、白桃果凍。</p>
-            </div>
-            <div class="timeline-item">
-                <span class="time">14:35</span>
-                <span class="activity">移動至巴士站</span>
-                <p>前往<strong>西口 (West Exit)</strong>，下到1樓找 <strong>21號月台</strong>。</p>
-            </div>
-            <div class="timeline-item">
-                <span class="time">14:50</span>
-                <span class="activity">🚍 機場巴士發車 (絕對不能遲到)</span>
-                <p>15:20 抵達岡山桃太郎機場。</p>
-            </div>
-            <div class="timeline-item">
-                <span class="time">15:55</span>
-                <span class="activity">虎航 IT263 開櫃</span>
-                <p>17:55 起飛 → 20:15 抵達高雄。</p>
-            </div>
-        </div>
-    </div>
+<script>
+    const RATES = { HKD: 0.051, TWD: 0.215 };
 
-</div>
+    // --- 1. 行程資料 (Daiwa Roynet + 道後帕提歐 修正版) ---
+    const data = [
+        {
+            day: 1, date: "1/5 (一)", title: "抵達高松",
+            events: [
+                { time: "10:20", title: "抵達高松機場", desc: "出關後前往2號乘車處搭巴士。", type: "transport" },
+                { time: "11:10", title: "機場巴士 → 兵庫町", desc: "往高松站方向，免轉車。", type: "transport", 
+                  origin: "Takamatsu Airport", dest: "Hyogomachi Bus Stop" },
+                { time: "12:00", title: "步行至飯店", desc: "東橫INN 高松兵庫町寄放行李。", type: "walk", 
+                  origin: "Hyogomachi Bus Stop", dest: "Toyoko Inn Takamatsu Hyogomachi" },
+                { time: "12:30", title: "午餐：うどん市場", desc: "就在飯店隔壁，讚岐烏龍麵。", type: "food", price: 800, loc: "Udon Ichiba Hyogo-machi" },
+                { time: "18:00", title: "晚餐：一鶴骨付鳥", desc: "高松必吃名店。", type: "food", price: 2000, loc: "Ikkaku Takamatsu" }
+            ]
+        },
+        {
+            day: 2, date: "1/6 (二)", title: "金刀比羅宮",
+            events: [
+                { time: "09:00", title: "交通：前往琴平", desc: "琴電琴平線 (高松築港出發)。", type: "transport", 
+                  origin: "Takamatsu-Chikko Station", dest: "Kotoden-Kotohira Station" },
+                { time: "10:00", title: "金刀比羅宮", desc: "挑戰 1368 級階梯。", type: "spot", loc: "Kotohira-gu" },
+                { time: "13:00", title: "午餐：琴平商店街", desc: "參道周邊用餐。", type: "food", price: 1000, loc: "Kotohira-gu Omotesando" },
+                { time: "19:30", title: "步行回飯店", desc: "吃飽散步回旅館。", type: "walk", 
+                  origin: "Takamatsu Station", dest: "Toyoko Inn Takamatsu Hyogomachi" }
+            ]
+        },
+        {
+            day: 3, date: "1/7 (三)", title: "移動至松山",
+            events: [
+                { time: "09:00", title: "JR高松 → JR松山", desc: "特急 Ishizuchi 號 (建議指定席)。", type: "transport", price: 6670,
+                  origin: "Takamatsu Station", dest: "Matsuyama Station" },
+                { time: "12:00", title: "JR松山 → 道後溫泉", desc: "路面電車 #5 (往道後溫泉)。", type: "transport",
+                  origin: "JR Matsuyama Station", dest: "Dogo Onsen Station" },
+                { time: "12:30", title: "入住：道後帕提歐", desc: "飯店就在車站正對面。", type: "spot", loc: "Hotel Patio Dogo" },
+                { time: "13:30", title: "道後溫泉散策", desc: "本館泡湯、少爺機關鐘。", type: "spot", price: 1000, loc: "Dogo Onsen Honkan" },
+                { time: "18:00", title: "晚餐：宇和島鯛魚飯", desc: "推薦丸水或秋嘉。", type: "food", price: 2000, loc: "Gansui Dogo" }
+            ]
+        },
+        {
+            day: 4, date: "1/8 (四)", title: "松山城 & 換飯店",
+            events: [
+                { time: "10:00", title: "換飯店：道後 → 大街道", desc: "電車 #3 或 #5，入住 Daiwa Roynet。", type: "transport",
+                   origin: "Dogo Onsen Station", dest: "Daiwa Roynet Hotel Matsuyama" },
+                { time: "11:00", title: "松山城", desc: "搭乘纜車上山，參觀天守閣。", type: "spot", price: 1000, loc: "Matsuyama Castle Ropeway Station" },
+                { time: "18:30", title: "生日大餐 🎉", desc: "大街道周邊精緻餐廳。", type: "food", price: 5000, loc: "Okaido Shopping Street" },
+                { time: "20:00", title: "回 Daiwa Roynet 休息", desc: "樓下有7-11，非常方便。", type: "walk" }
+            ]
+        },
+        {
+            day: 5, date: "1/9 (五)", title: "返程 (岡山回)",
+            events: [
+                { time: "09:35", title: "大街道 → JR松山站", desc: "務必搭乘【電車 #5】(往JR松山駅前)。", type: "transport", 
+                  origin: "Okaido Station", dest: "JR Matsuyama Station" },
+                { time: "10:21", title: "JR松山 → JR岡山", desc: "特急 Shiokaze 14號 (絕對不能遲到)。", type: "transport", price: 6970,
+                  origin: "Matsuyama Station", dest: "Okayama Station" },
+                { time: "14:50", title: "岡山站 → 機場", desc: "西口 21號月台搭巴士。", type: "transport", price: 780,
+                  origin: "Okayama Station", dest: "Okayama Airport" },
+                { time: "17:55", title: "IT263 岡山 → 高雄", desc: "虎航，甜蜜的家。", type: "transport" }
+            ]
+        }
+    ];
 
+    // --- 2. 渲染引擎 ---
+    const list = document.getElementById("itinerary-list");
+    
+    data.forEach((day, idx) => {
+        const card = document.createElement("div");
+        card.className = "day-card";
+        card.innerHTML = `
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-num">${day.day}</div>
+                <div class="day-text">
+                    <h2>${day.title}</h2>
+                    <p>${day.date}</p>
+                </div>
+                <div class="arrow">▼</div>
+            </div>
+            <div class="events-list"></div>
+        `;
+        
+        const eventContainer = card.querySelector(".events-list");
+        day.events.forEach(ev => {
+            const item = document.createElement("div");
+            item.className = `event-item ${ev.type === 'transport' ? 'type-transport' : ''}`;
+            
+            let btns = "";
+            if (ev.loc) {
+                const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.loc)}`;
+                btns += `<a href="${url}" class="btn btn-map" target="_blank">📍 地圖</a>`;
+                btns += `<a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ev.loc)}" class="btn btn-go" target="_blank">🗺️ 導航</a>`;
+            }
+            if (ev.origin && ev.dest) {
+                const mode = ev.type === 'walk' ? 'walking' : 'transit';
+                const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(ev.origin)}&destination=${encodeURIComponent(ev.dest)}&travelmode=${mode}`;
+                const btnText = ev.type === 'walk' ? '🚶 步行路線' : '🚌 查路線';
+                const btnClass = ev.type === 'walk' ? 'btn-walk' : 'btn-go';
+                btns += `<a href="${url}" class="btn ${btnClass}" target="_blank">${btnText}</a>`;
+            }
+            if (ev.price) btns += `<button class="btn btn-price">¥${ev.price}</button>`;
+
+            item.innerHTML = `
+                <span class="event-time">${ev.time}</span>
+                <div class="event-title">${ev.title}</div>
+                <div class="event-desc">${ev.desc}</div>
+                <div class="action-btns">${btns}</div>
+            `;
+            eventContainer.appendChild(item);
+        });
+
+        list.appendChild(card);
+        if(idx === 0) {
+            eventContainer.style.display = "block";
+            card.querySelector(".arrow").classList.add("rotate");
+        }
+    });
+
+    function toggleDay(header) {
+        const content = header.nextElementSibling;
+        const arrow = header.querySelector(".arrow");
+        if (content.style.display === "block") {
+            content.style.display = "none";
+            arrow.classList.remove("rotate");
+        } else {
+            document.querySelectorAll(".events-list").forEach(el => el.style.display = "none");
+            document.querySelectorAll(".arrow").forEach(el => el.classList.remove("rotate"));
+            content.style.display = "block";
+            arrow.classList.add("rotate");
+        }
+    }
+
+    function showTab(id, btn) {
+        document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+        document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
+        document.getElementById("tab-" + id).classList.add("active");
+        btn.classList.add("active");
+    }
+
+    // --- 3. 記帳功能 (進階版：含分類與圖表) ---
+    let expenses = JSON.parse(localStorage.getItem("my_trip_money_v3")) || [];
+    let myChart = null;
+
+    // 分類定義
+    const CAT_MAP = {
+        'transport': { label: '交通', color: '#4A90E2' },
+        'food': { label: '飲食', color: '#F5A623' },
+        'ticket': { label: '門票', color: '#50E3C2' },
+        'stay': { label: '住宿', color: '#9013FE' },
+        'shop': { label: '購物', color: '#FF6B6B' },
+        'other': { label: '其他', color: '#BDC3C7' }
+    };
+
+    function renderMoney() {
+        const el = document.getElementById("expense-list");
+        el.innerHTML = "";
+        let total = 0;
+        const catTotal = { transport:0, food:0, ticket:0, stay:0, shop:0, other:0 };
+        
+        // 排序：新到舊
+        expenses.sort((a,b) => b.id - a.id);
+
+        expenses.forEach((ex) => {
+            total += parseInt(ex.price);
+            catTotal[ex.cat] = (catTotal[ex.cat] || 0) + parseInt(ex.price);
+
+            const row = document.createElement("div");
+            // 加入分類標籤樣式
+            row.className = `expense-row cat-${ex.cat}`;
+            row.innerHTML = `
+                <div class="ex-info">
+                    <div><span class="ex-date">${ex.date}</span> <span class="ex-cat">${CAT_MAP[ex.cat].label}</span></div>
+                    <div class="ex-name">${ex.item}</div>
+                </div>
+                <div style="display:flex; align-items:center;">
+                    <div class="ex-amt">¥${parseInt(ex.price).toLocaleString()}</div>
+                    <button class="del-btn" onclick="delMoney(${ex.id})"><i class="fas fa-trash"></i> 刪除</button>
+                </div>
+            `;
+            el.appendChild(row);
+        });
+
+        // 更新總額
+        document.getElementById("total-spent").innerText = "¥" + total.toLocaleString();
+        const hkd = Math.round(total * RATES.HKD);
+        const twd = Math.round(total * RATES.TWD);
+        document.getElementById("total-foreign").innerText = `HK$${hkd.toLocaleString()} / NT$${twd.toLocaleString()}`;
+
+        // 更新圖表
+        updateChart(catTotal);
+    }
+
+    function updateChart(data) {
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        const labels = Object.keys(data).map(k => CAT_MAP[k].label);
+        const values = Object.keys(data).map(k => data[k]);
+        const colors = Object.keys(data).map(k => CAT_MAP[k].color);
+
+        if (myChart) {
+            myChart.destroy(); // 銷毀舊圖表
+        }
+
+        // 如果沒有數據，顯示空圖
+        if (values.every(v => v === 0)) {
+            // 可以選擇不畫圖或畫一個空的
+            return;
+        }
+
+        myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: colors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right' }
+                }
+            }
+        });
+    }
+
+    function addMoney() {
+        const d = document.getElementById("in-date").value;
+        const c = document.getElementById("in-cat").value;
+        const i = document.getElementById("in-item").value;
+        const p = document.getElementById("in-price").value;
+        
+        if(!i || !p) { alert("請輸入項目與金額"); return; }
+        
+        // 使用 Date.now() 當作唯一 ID
+        expenses.push({ id: Date.now(), date: d, cat: c, item: i, price: parseInt(p) });
+        localStorage.setItem("my_trip_money_v3", JSON.stringify(expenses));
+        
+        document.getElementById("in-item").value = "";
+        document.getElementById("in-price").value = "";
+        renderMoney();
+    }
+
+    function delMoney(id) {
+        if(confirm("確定刪除此筆紀錄？")) {
+            // 透過 ID 過濾刪除
+            expenses = expenses.filter(ex => ex.id !== id);
+            localStorage.setItem("my_trip_money_v3", JSON.stringify(expenses));
+            renderMoney();
+        }
+    }
+
+    // 初始化
+    renderMoney();
+
+</script>
 </body>
 </html>
